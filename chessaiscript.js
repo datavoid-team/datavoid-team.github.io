@@ -1,4 +1,4 @@
-"use strict";
+
 console.clear();
 let PIECE_DIR_CALC = 0;
 class Utils {
