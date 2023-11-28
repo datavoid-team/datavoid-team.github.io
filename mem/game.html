@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Memory Card Game</title>
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            background: url('space-calatop.gif') no-repeat center center fixed;
+            background-size: cover;
+        }
+
+        #game-board {
+            display: grid;
+            grid-template-columns: repeat(8, 120px);
+            grid-template-rows: repeat(2, 120px);
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .card {
+            width: 100%;
+            height: 100%;
+            background-color: #fff;
+            border: 2px solid #ccc;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 20px;
+            cursor: pointer;
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+        }
+
+        .card.initial {
+            background-image: url('path-to-hidden-image.jpg'); /* Set the path to your hidden image */
+        }
+
+        #message {
+            text-align: center;
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+
+        #restart-btn {
+            padding: 10px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+<div id="game-board"></div>
+<div id="message"></div>
+<button id="restart-btn" onclick="restartGame()">Restart Game</button>
+
+<script>
+    const cards = [
+        'https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhbDpvLJlh4R1uY6h6KuXZpK46-WSzEFf-u53109yfblXbSf7XF6h35JgPMcSA4OdSLbHa0ZdLDip5DO3dCb3qmukI794JP1UPZZl082y3-SuxDspVVZhVL00716BjW8V7l7m783NjZCJedIKSkCOD7S1mNbRE46ONVS3ssPaTxGV77t43GxsLalXscfPqC/s320/1000_F_386711753_RDHw4vQtusK7xXWI0OAcFfozPm9e5ZAN.jpg', 'https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhbDpvLJlh4R1uY6h6KuXZpK46-WSzEFf-u53109yfblXbSf7XF6h35JgPMcSA4OdSLbHa0ZdLDip5DO3dCb3qmukI794JP1UPZZl082y3-SuxDspVVZhVL00716BjW8V7l7m783NjZCJedIKSkCOD7S1mNbRE46ONVS3ssPaTxGV77t43GxsLalXscfPqC/s320/1000_F_386711753_RDHw4vQtusK7xXWI0OAcFfozPm9e5ZAN.jpg',
+        'https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEiyDJIQMkkJTKV5eJ5LmyYq48Zt7-21dYzpuLdOP8VIDR5VvTZ0PNbJwGGHuBJtnt2Z8iP5T9zYVpe7UaazrNhAcLlR3GA-Uz5-rpYNdbYkRLe5BlYwar11X-cuNpH8cyC9P7AuyqlFUv9fQeUaVdSoXphZbwR0BWOi7F1OId20qv9kbGyJAKdYt6fU2S8-/s320/203103124-tiny-alien-in-the-night-city-generative-ai-high-quality-illustration.jpg', 'https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEiyDJIQMkkJTKV5eJ5LmyYq48Zt7-21dYzpuLdOP8VIDR5VvTZ0PNbJwGGHuBJtnt2Z8iP5T9zYVpe7UaazrNhAcLlR3GA-Uz5-rpYNdbYkRLe5BlYwar11X-cuNpH8cyC9P7AuyqlFUv9fQeUaVdSoXphZbwR0BWOi7F1OId20qv9kbGyJAKdYt6fU2S8-/s320/203103124-tiny-alien-in-the-night-city-generative-ai-high-quality-illustration.jpg',
+        'https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhFGDkyxTd8zT5MourRNI2hCE6fZ3Z6g0ulmqpjF4dRxzRXx-inLUyj0PACPRfV_ajNdZVWbIHcBXydquefFRjJ-gipQ4pogfIf4xgCT8au2IhdXJuxXJbTbYvv29tmOgocFUT5zjzDD1dNscxqsNXDSidEXF1qcoAZaJr4gL2k4_7_WsAY2EeyOV51DsbW/s320/360_F_642200512_ZDQapyhVzmgcQYETv8KfM1YDIf6KSq9J.jpg', 'https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhFGDkyxTd8zT5MourRNI2hCE6fZ3Z6g0ulmqpjF4dRxzRXx-inLUyj0PACPRfV_ajNdZVWbIHcBXydquefFRjJ-gipQ4pogfIf4xgCT8au2IhdXJuxXJbTbYvv29tmOgocFUT5zjzDD1dNscxqsNXDSidEXF1qcoAZaJr4gL2k4_7_WsAY2EeyOV51DsbW/s320/360_F_642200512_ZDQapyhVzmgcQYETv8KfM1YDIf6KSq9J.jpg',
+        'https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEiglww7Q8rMrrc3hAshQQdYao9TXpuenkWKVwKSCpOZcbjsSKEnLxuj7aNZ43uPnZrwwcTUiB1mkaQri3ycd1PvmBvGXw8oAwAe8b2dNIRJc332lba5Ic0j1e8OxcDxGa32Wx51aeLU-ZDACFv65VM0hafkv1G3x7ee0bXYjqxjpyjTa4AUEct6fMdxv1lm/s320/1.jpg', 'https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEiglww7Q8rMrrc3hAshQQdYao9TXpuenkWKVwKSCpOZcbjsSKEnLxuj7aNZ43uPnZrwwcTUiB1mkaQri3ycd1PvmBvGXw8oAwAe8b2dNIRJc332lba5Ic0j1e8OxcDxGa32Wx51aeLU-ZDACFv65VM0hafkv1G3x7ee0bXYjqxjpyjTa4AUEct6fMdxv1lm/s320/1.jpg',
+        'https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEizTfIeHApxWXZiPMbaxNB8z7UD2Vfp_pF7xs0dPb3f6O8vvjDZH7R9dra1A3nmX4axgrW-K-aVbzcqMX9aun3-Y_o_0zShj-rzhykfkCTIwWmoF4FWJJ0h-bxsSDouzYBxEUgmOs5XT0jZOZDL5pwFpyJUDwqdB3dLRf0s_e6TnMvUHy7IgaGeplL7xlsS/s320/2uijnu.jpg', 'https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEizTfIeHApxWXZiPMbaxNB8z7UD2Vfp_pF7xs0dPb3f6O8vvjDZH7R9dra1A3nmX4axgrW-K-aVbzcqMX9aun3-Y_o_0zShj-rzhykfkCTIwWmoF4FWJJ0h-bxsSDouzYBxEUgmOs5XT0jZOZDL5pwFpyJUDwqdB3dLRf0s_e6TnMvUHy7IgaGeplL7xlsS/s320/2uijnu.jpg',
+        'https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEisXNS4T_uF-5VLVfvZDk4h4YzE3T_sXHFw5O_V3w7sOSFS_BuYL5MfsnhlHc_VG6fO48a5f959APpW6zl_RAB5Cp7RagnHP5UsfWrNc_VjloF1KfA1_Zhf1K_HjPNHVZUhXT_Hdjxxq_gpK5qebN-n_Mjv9-BcZ_vdBHJdFlb8wc6ZSFNx8uemwI5wfPWR/s320/desktop-wallpaper-universe-flight-orbit-satellite-peace-world-iss-station-mss-station-thumbnail.jpg', 'https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEisXNS4T_uF-5VLVfvZDk4h4YzE3T_sXHFw5O_V3w7sOSFS_BuYL5MfsnhlHc_VG6fO48a5f959APpW6zl_RAB5Cp7RagnHP5UsfWrNc_VjloF1KfA1_Zhf1K_HjPNHVZUhXT_Hdjxxq_gpK5qebN-n_Mjv9-BcZ_vdBHJdFlb8wc6ZSFNx8uemwI5wfPWR/s320/desktop-wallpaper-universe-flight-orbit-satellite-peace-world-iss-station-mss-station-thumbnail.jpg',
+        'https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgRyEfuCGCh8nug3nXLRfyr1HN7Cnm8ZSa8YFUl0Q7VYZv5jFTCHazDDnbbvG_RKzRckRD01OtXWwOnC9qBhtEHfgAxIFJJN8UICTDJ8zeaVSdQNR7ifbRudGsyo5yyVCInVlS7aRBKlpQfnqtnh_UkPBZH1r3o23QTY7dAiYyDzecBZz1dtHfkGTlhojdv/s320/1693631577_o50W2U_chandrayaan_3_1_.jpg', 'https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgRyEfuCGCh8nug3nXLRfyr1HN7Cnm8ZSa8YFUl0Q7VYZv5jFTCHazDDnbbvG_RKzRckRD01OtXWwOnC9qBhtEHfgAxIFJJN8UICTDJ8zeaVSdQNR7ifbRudGsyo5yyVCInVlS7aRBKlpQfnqtnh_UkPBZH1r3o23QTY7dAiYyDzecBZz1dtHfkGTlhojdv/s320/1693631577_o50W2U_chandrayaan_3_1_.jpg',
+        'image8.jpg', 'image8.jpg',
+    ];
+
+    let selectedCards = [];
+    let matchedCards = [];
+    let canSelect = true;
+
+    function shuffleArray(array) {
+        for (let i = array.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [array[i], array[j]] = [array[j], array[i]];
+        }
+    }
+
+    function createGameBoard() {
+        const gameBoard = document.getElementById('game-board');
+        shuffleArray(cards);
+
+        for (let i = 0; i < cards.length; i++) {
+            const cardElement = document.createElement('div');
+            cardElement.classList.add('card', 'initial');
+            cardElement.setAttribute('data-index', i);
+            cardElement.addEventListener('click', () => flipCard(i));
+            gameBoard.appendChild(cardElement);
+        }
+    }
+
+    function flipCard(index) {
+        if (!canSelect || selectedCards.length === 2 || matchedCards.includes(index)) {
+            return;
+        }
+
+        const card = document.querySelector(`.card[data-index="${index}"]`);
+        card.style.backgroundImage = `url(${cards[index]})`;
+        card.classList.remove('initial');
+        selectedCards.push({ index, value: cards[index] });
+
+        if (selectedCards.length === 2) {
+            canSelect = false;
+            setTimeout(checkMatch, 1000);
+        }
+    }
+
+    function checkMatch() {
+        const [card1, card2] = selectedCards;
+
+        if (card1.value === card2.value) {
+            matchedCards.push(card1.index, card2.index);
+            if (matchedCards.length === cards.length) {
+                document.getElementById('message').textContent = 'You Win!';
+            }
+        } else {
+            hideCards([card1.index, card2.index]);
+        }
+
+        selectedCards = [];
+        canSelect = true;
+    }
+
+    function hideCards(indices) {
+        setTimeout(() => {
+            indices.forEach(index => {
+                const card = document.querySelector(`.card[data-index="${index}"]`);
+                card.style.backgroundImage = '';
+                card.classList.add('initial');
+            });
+        }, 500);
+    }
+
+    function restartGame() {
+        selectedCards = [];
+        matchedCards = [];
+        canSelect = true;
+        document.getElementById('game-board').innerHTML = '';
+        document.getElementById('message').textContent = '';
+        createGameBoard();
+    }
+
+    // Initialize the game
+    createGameBoard();
+</script>
+
+</body>
+</html>
