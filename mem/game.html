@@ -13,13 +13,15 @@
             height: 100vh;
             margin: 0;
             background: url('space-calatop.gif') no-repeat center center fixed;
-            background-size: cover;
+            background-size: contain;
+            background-color: black;
+            color: black;
         }
 
         #game-board {
             display: grid;
-            grid-template-columns: repeat(8, 120px);
-            grid-template-rows: repeat(2, 120px);
+            grid-template-columns: repeat(4, 120px);
+            grid-template-rows: repeat(4, 120px);
             gap: 10px;
             margin-bottom: 20px;
         }
@@ -27,7 +29,7 @@
         .card {
             width: 100%;
             height: 100%;
-            background-color: #fff;
+            background-color: linear-gradient(90deg, rgba(0,27,168,1) 0%, rgba(19,162,156,1) 100%);
             border: 2px solid #ccc;
             border-radius: 10px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
@@ -39,7 +41,12 @@
             background-size: cover;
             background-position: center;
             background-repeat: no-repeat;
+            transition: transform 0.2s;
         }
+        .card:hover {
+    transform: scale(1.05); /* Increase the size on hover */
+    background-color: rgb(0,27,168);
+}
 
         .card.initial {
             background-image: url('path-to-hidden-image.jpg'); /* Set the path to your hidden image */
@@ -56,15 +63,95 @@
             font-size: 16px;
             cursor: pointer;
         }
+         #win-modal {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            padding: 20px;
+            background: linear-gradient(90deg, rgba(0,27,168,1) 0%, rgba(19,162,156,1) 100%);
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+        }
+
+        #win-modal h2 {
+            margin-bottom: 20px;
+        }
+
+        #win-modal button {
+            padding: 10px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        button {
+    padding: 10px;
+    font-size: 16px;
+    cursor: pointer;
+    background-color: #008CBA; /* Green background color */
+    color: white; /* White text color */
+    border: none; /* No border */
+    border-radius: 5px; /* Rounded corners */
+    margin: 5px; /* Add some margin for spacing */
+}
+
+button:hover {
+    background-color: #45a049; /* Darker green color on hover */
+}
+
+/* Style for the modal button */
+#win-modal button {
+    padding: 10px;
+    font-size: 16px;
+    cursor: pointer;
+    background-color: #4CAF50; /* Blue background color */
+    color: white; /* White text color */
+    border: none; /* No border */
+    border-radius: 5px; /* Rounded corners */
+    margin: 5px; /* Add some margin for spacing */
+}
+
+#win-modal button:hover {
+    background-color: #007bb5; /* Darker blue color on hover */
+}
     </style>
 </head>
 <body>
 
 <div id="game-board"></div>
 <div id="message"></div>
+<div id="win-modal">
+  <br>
+    <h1> &nbsp; You Win! &nbsp; </h1><br>
+    <h3>Check out more games like this on https://games.datavoid.in<h3>
+    <button onclick="restartGameAndCloseModal()">Play Again</button>
+    <br>
+</div>
 <button id="restart-btn" onclick="restartGame()">Restart Game</button>
 
 <script>
+  function showWinModal() {
+        const winModal = document.getElementById('win-modal');
+        winModal.style.display = 'block';
+    }
+    function restartGameAndCloseModal() {
+        restartGame();
+        // Hide the win modal on play again
+        document.getElementById('win-modal').style.display = 'none';
+    }
+
+    function restartGame() {
+        selectedCards = [];
+        matchedCards = [];
+        canSelect = true;
+        document.getElementById('game-board').innerHTML = '';
+        document.getElementById('message').textContent = '';
+        createGameBoard();
+
+        // Hide the win modal on restart
+        document.getElementById('win-modal').style.display = 'none';
+    }
     const cards = [
         'https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhbDpvLJlh4R1uY6h6KuXZpK46-WSzEFf-u53109yfblXbSf7XF6h35JgPMcSA4OdSLbHa0ZdLDip5DO3dCb3qmukI794JP1UPZZl082y3-SuxDspVVZhVL00716BjW8V7l7m783NjZCJedIKSkCOD7S1mNbRE46ONVS3ssPaTxGV77t43GxsLalXscfPqC/s320/1000_F_386711753_RDHw4vQtusK7xXWI0OAcFfozPm9e5ZAN.jpg', 'https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhbDpvLJlh4R1uY6h6KuXZpK46-WSzEFf-u53109yfblXbSf7XF6h35JgPMcSA4OdSLbHa0ZdLDip5DO3dCb3qmukI794JP1UPZZl082y3-SuxDspVVZhVL00716BjW8V7l7m783NjZCJedIKSkCOD7S1mNbRE46ONVS3ssPaTxGV77t43GxsLalXscfPqC/s320/1000_F_386711753_RDHw4vQtusK7xXWI0OAcFfozPm9e5ZAN.jpg',
         'https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEiyDJIQMkkJTKV5eJ5LmyYq48Zt7-21dYzpuLdOP8VIDR5VvTZ0PNbJwGGHuBJtnt2Z8iP5T9zYVpe7UaazrNhAcLlR3GA-Uz5-rpYNdbYkRLe5BlYwar11X-cuNpH8cyC9P7AuyqlFUv9fQeUaVdSoXphZbwR0BWOi7F1OId20qv9kbGyJAKdYt6fU2S8-/s320/203103124-tiny-alien-in-the-night-city-generative-ai-high-quality-illustration.jpg', 'https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEiyDJIQMkkJTKV5eJ5LmyYq48Zt7-21dYzpuLdOP8VIDR5VvTZ0PNbJwGGHuBJtnt2Z8iP5T9zYVpe7UaazrNhAcLlR3GA-Uz5-rpYNdbYkRLe5BlYwar11X-cuNpH8cyC9P7AuyqlFUv9fQeUaVdSoXphZbwR0BWOi7F1OId20qv9kbGyJAKdYt6fU2S8-/s320/203103124-tiny-alien-in-the-night-city-generative-ai-high-quality-illustration.jpg',
@@ -73,7 +160,7 @@
         'https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEizTfIeHApxWXZiPMbaxNB8z7UD2Vfp_pF7xs0dPb3f6O8vvjDZH7R9dra1A3nmX4axgrW-K-aVbzcqMX9aun3-Y_o_0zShj-rzhykfkCTIwWmoF4FWJJ0h-bxsSDouzYBxEUgmOs5XT0jZOZDL5pwFpyJUDwqdB3dLRf0s_e6TnMvUHy7IgaGeplL7xlsS/s320/2uijnu.jpg', 'https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEizTfIeHApxWXZiPMbaxNB8z7UD2Vfp_pF7xs0dPb3f6O8vvjDZH7R9dra1A3nmX4axgrW-K-aVbzcqMX9aun3-Y_o_0zShj-rzhykfkCTIwWmoF4FWJJ0h-bxsSDouzYBxEUgmOs5XT0jZOZDL5pwFpyJUDwqdB3dLRf0s_e6TnMvUHy7IgaGeplL7xlsS/s320/2uijnu.jpg',
         'https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEisXNS4T_uF-5VLVfvZDk4h4YzE3T_sXHFw5O_V3w7sOSFS_BuYL5MfsnhlHc_VG6fO48a5f959APpW6zl_RAB5Cp7RagnHP5UsfWrNc_VjloF1KfA1_Zhf1K_HjPNHVZUhXT_Hdjxxq_gpK5qebN-n_Mjv9-BcZ_vdBHJdFlb8wc6ZSFNx8uemwI5wfPWR/s320/desktop-wallpaper-universe-flight-orbit-satellite-peace-world-iss-station-mss-station-thumbnail.jpg', 'https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEisXNS4T_uF-5VLVfvZDk4h4YzE3T_sXHFw5O_V3w7sOSFS_BuYL5MfsnhlHc_VG6fO48a5f959APpW6zl_RAB5Cp7RagnHP5UsfWrNc_VjloF1KfA1_Zhf1K_HjPNHVZUhXT_Hdjxxq_gpK5qebN-n_Mjv9-BcZ_vdBHJdFlb8wc6ZSFNx8uemwI5wfPWR/s320/desktop-wallpaper-universe-flight-orbit-satellite-peace-world-iss-station-mss-station-thumbnail.jpg',
         'https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgRyEfuCGCh8nug3nXLRfyr1HN7Cnm8ZSa8YFUl0Q7VYZv5jFTCHazDDnbbvG_RKzRckRD01OtXWwOnC9qBhtEHfgAxIFJJN8UICTDJ8zeaVSdQNR7ifbRudGsyo5yyVCInVlS7aRBKlpQfnqtnh_UkPBZH1r3o23QTY7dAiYyDzecBZz1dtHfkGTlhojdv/s320/1693631577_o50W2U_chandrayaan_3_1_.jpg', 'https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgRyEfuCGCh8nug3nXLRfyr1HN7Cnm8ZSa8YFUl0Q7VYZv5jFTCHazDDnbbvG_RKzRckRD01OtXWwOnC9qBhtEHfgAxIFJJN8UICTDJ8zeaVSdQNR7ifbRudGsyo5yyVCInVlS7aRBKlpQfnqtnh_UkPBZH1r3o23QTY7dAiYyDzecBZz1dtHfkGTlhojdv/s320/1693631577_o50W2U_chandrayaan_3_1_.jpg',
-        'image8.jpg', 'image8.jpg',
+        'https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEip8jJPy5jBJNYwjrftEtfJF036cE6lUJ8Qyb7TGmLV1cjrqrBIqxwrWSsRehrcIPfNxD24C-YmgILv1O5Ohz_KcvJocLUATuYZQ9d_Mb2ww_-Iz6-fKuCXOtguECQIZ_YP4hwpvuScPiviusG_3rURoxzaIXr_3P15TktdMDK7m95b6TJNn3PGNtmcjvGc/s320/desktop-wallpaper-space-art-starman-astronaut-tesla-starman-thumbnail.jpg', 'https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEip8jJPy5jBJNYwjrftEtfJF036cE6lUJ8Qyb7TGmLV1cjrqrBIqxwrWSsRehrcIPfNxD24C-YmgILv1O5Ohz_KcvJocLUATuYZQ9d_Mb2ww_-Iz6-fKuCXOtguECQIZ_YP4hwpvuScPiviusG_3rURoxzaIXr_3P15TktdMDK7m95b6TJNn3PGNtmcjvGc/s320/desktop-wallpaper-space-art-starman-astronaut-tesla-starman-thumbnail.jpg',
     ];
 
     let selectedCards = [];
@@ -122,7 +209,7 @@
         if (card1.value === card2.value) {
             matchedCards.push(card1.index, card2.index);
             if (matchedCards.length === cards.length) {
-                document.getElementById('message').textContent = 'You Win!';
+               showWinModal();
             }
         } else {
             hideCards([card1.index, card2.index]);
