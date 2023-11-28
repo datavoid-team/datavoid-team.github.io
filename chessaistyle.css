@@ -1,3 +1,4 @@
+/* original
 :root {
   --border-width: calc(var(--diameter-tile) / 60);
   --diameter-board: min(85vw, 85vh);
@@ -13,6 +14,26 @@
   --color-shadow-lighter: hsl(var(--color-board-hue), var(--color-board-sat), 55%);
   --transition-ease: cubic-bezier(0.25, 1, 0.5, 1);
   --color-background: var(--color-black);
+}*/
+
+/* Space Theme */
+:root {
+  --border-width: calc(var(--diameter-tile) / 60);
+  --diameter-board: min(85vw, 85vh);
+  --diameter-tile: calc(1 / 8 * var(--diameter-board));
+  --edge-width: calc((min(100vw, 100vh) - var(--diameter-board)) * 0.3);
+  --color-danger: tomato;
+  --color-success: #1d83e0;
+  --color-white: #f0f0f0;
+  --color-black: #222;
+  --color-board-hue: 240; /* Blue for a space theme */
+  --color-board-sat: 50%;
+  --color-shadow: hsl(var(--color-board-hue), var(--color-board-sat), 15%); /* Darken the shadow */
+  --color-shadow-lighter: hsl(var(--color-board-hue), var(--color-board-sat), 25%); /* Darken the lighter shadow */
+  --transition-ease: cubic-bezier(0.25, 1, 0.5, 1);
+  --color-background: transparent;
+  --background-image: url('bg.jpg'); /* Dark space background color */
+  --glass-color: rgba(255, 255, 255, 0.2);
 }
 
 aside {
@@ -70,14 +91,32 @@ aside div svg {
 html,
 body {
   height: 100%;
+  margin: 0;
 }
 
 body {
-  background: var(--color-background);
+  background: url('bg1.jpg');
   overflow: hidden;
   transition: background-color 250ms ease-in-out;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0;
+}
+#view canvas {
+background: transparent;
 }
 
+#view {
+   background: none; /*var(--color-shadow-lighter)*/
+  box-shadow: 0 0 0 calc(var(--border-width) * 3) var(--color-shadow-lighter),
+    0 0 0 var(--edge-width) var(--color-shadow);
+  height: var(--diameter-board);
+  width: var(--diameter-board);
+  position: relative;
+}
+
+/* original
 #view {
   background: var(--color-shadow-lighter);
   box-shadow: 0 0 0 calc(var(--border-width) * 3) var(--color-shadow-lighter),
@@ -87,13 +126,15 @@ body {
     calc((100vw - var(--diameter-board)) * 0.5);
   position: relative;
   width: var(--diameter-board);
-}
+}*/
 
 .board {
   display: flex;
   flex-direction: column-reverse;
   height: 100%;
   width: 100%;
+  background: var(--glass-color);
+  backdrop-filter: blur(10px);
 }
 
 .board .row {
