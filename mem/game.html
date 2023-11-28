@@ -167,6 +167,7 @@ button:hover {
     let selectedCards = [];
     let matchedCards = [];
     let canSelect = true;
+    let isHandlingClick = false; 
 
     function shuffleArray(array) {
         for (let i = array.length - 1; i > 0; i--) {
@@ -192,6 +193,7 @@ button:hover {
         if (!canSelect || selectedCards.length === 2 || matchedCards.includes(index)) {
             return;
         }
+        isHandlingClick = true;
 
         const card = document.querySelector(`.card[data-index="${index}"]`);
         card.style.backgroundImage = `url(${cards[index]})`;
@@ -202,6 +204,10 @@ button:hover {
             canSelect = false;
             setTimeout(checkMatch, 1000);
         }
+        // Set a timeout to reset isHandlingClick after a short duration
+    setTimeout(() => {
+        isHandlingClick = false;
+    }, 500);
     }
 
     function checkMatch() {
