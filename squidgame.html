@@ -32,7 +32,12 @@
   <script>
     // Redirect to another website after the video ends
     document.querySelector('video').addEventListener('ended', function() {
-      window.location.href = 'https://link.datavoid.in/trivia'; 
+      window.location.href = 'https://link.datavoid.in/squidgame'; 
+    });
+
+    // Troubleshooting
+    document.querySelector('video').addEventListener('error', function() {
+      console.error('Error loading the video:', this.error);
     });
   </script>
 </body>
