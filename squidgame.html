@@ -20,7 +20,7 @@
   </style>
 </head>
 <body>
-  <video id="myVideo" autoplay>
+  <video id="myVideo" preload="auto">
     <source src="sq.mp4" type="video/mp4">
     <!-- Add additional source elements for different video formats if needed -->
     Your browser does not support the video tag.
@@ -42,10 +42,17 @@
       }
     }
 
-    // Play the video when the page loads and go full screen
+    // Play the video when the page loads and go full screen (on desktop)
     window.onload = function() {
-      video.play();
-      launchFullScreen(document.documentElement); // Go full screen
+      if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
+        // For mobile devices, play the video only on user interaction
+        document.body.addEventListener('click', function() {
+          video.play();
+        }, { once: true });
+      } else {
+        video.play(); // For desktop, play the video automatically
+        launchFullScreen(document.documentElement); // Go full screen
+      }
     };
 
     // Redirect to another website after the video ends
