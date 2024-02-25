@@ -20,23 +20,41 @@
       height: 100vh;
       object-fit: cover;
     }
+    .play-button {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: rgba(0, 0, 0, 0.5);
+      color: white;
+      padding: 20px;
+      border: none;
+      cursor: pointer;
+    }
   </style>
 </head>
 <body>
-  <video autoplay>
+  <video id="myVideo" preload="auto">
     <source src="sq.mp4" type="video/mp4">
     <!-- Add additional source elements for different video formats if needed -->
     Your browser does not support the video tag.
   </video>
+  <button class="play-button" onclick="startVideo()">Play</button>
 
   <script>
+    function startVideo() {
+      var video = document.getElementById("myVideo");
+      video.play();
+      document.querySelector('.play-button').style.display = "none";
+    }
+
     // Redirect to another website after the video ends
-    document.querySelector('video').addEventListener('ended', function() {
+    document.getElementById('myVideo').addEventListener('ended', function() {
       window.location.href = 'https://link.datavoid.in/squidgame'; 
     });
 
     // Troubleshooting
-    document.querySelector('video').addEventListener('error', function() {
+    document.getElementById('myVideo').addEventListener('error', function() {
       console.error('Error loading the video:', this.error);
     });
   </script>
