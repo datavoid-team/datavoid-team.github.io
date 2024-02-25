@@ -45,7 +45,7 @@
     var video = document.getElementById("myVideo");
     var playButton = document.getElementById("playButton");
 
-    // Trigger full-screen mode
+    // Function to launch full-screen mode
     function launchFullScreen(element) {
       if (element.requestFullscreen) {
         element.requestFullscreen();
@@ -58,21 +58,25 @@
       }
     }
 
-    // Play the video when the play button is clicked and go full screen
+    // Function to handle orientation change
+    function handleOrientationChange() {
+      if (window.innerHeight > window.innerWidth) {
+        // Portrait mode, show play button
+        playButton.style.display = "block";
+        video.pause();
+      } else {
+        // Landscape mode, play video
+        playButton.style.display = "none";
+        video.play();
+      }
+    }
+
+    // Play the video when the play button is clicked
     playButton.addEventListener('click', function() {
       video.play(); // Play the video
       launchFullScreen(document.documentElement); // Go full screen
       playButton.style.display = "none"; // Hide the play button
     });
-
-    // Play the video and go full screen on mobile devices when the user taps the video
-    if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
-      video.addEventListener('click', function() {
-        video.play(); // Play the video
-        launchFullScreen(document.documentElement); // Go full screen
-        playButton.style.display = "none"; // Hide the play button
-      });
-    }
 
     // Redirect to another website after the video ends
     video.addEventListener('ended', function() {
@@ -83,6 +87,12 @@
     video.addEventListener('error', function() {
       console.error('Error loading the video:', this.error);
     });
+
+    // Check orientation initially
+    handleOrientationChange();
+
+    // Handle orientation change events
+    window.addEventListener("orientationchange", handleOrientationChange);
   </script>
 </body>
 </html>
