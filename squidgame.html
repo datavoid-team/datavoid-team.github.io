@@ -13,48 +13,48 @@
       height: 100%;
     }
     video {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100vw;
-      height: 100vh;
+      width: 100%;
+      height: 100%;
       object-fit: cover;
-    }
-    .play-button {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      background: rgba(0, 0, 0, 0.5);
-      color: white;
-      padding: 20px;
-      border: none;
-      cursor: pointer;
     }
   </style>
 </head>
 <body>
-  <video id="myVideo" preload="auto">
+  <video id="myVideo" autoplay>
     <source src="sq.mp4" type="video/mp4">
     <!-- Add additional source elements for different video formats if needed -->
     Your browser does not support the video tag.
   </video>
-  <button class="play-button" onclick="startVideo()">Play</button>
 
   <script>
-    function startVideo() {
-      var video = document.getElementById("myVideo");
-      video.play();
-      document.querySelector('.play-button').style.display = "none";
+    var video = document.getElementById("myVideo");
+
+    // Trigger full-screen mode
+    function launchFullScreen(element) {
+      if (element.requestFullscreen) {
+        element.requestFullscreen();
+      } else if (element.mozRequestFullScreen) {
+        element.mozRequestFullScreen();
+      } else if (element.webkitRequestFullscreen) {
+        element.webkitRequestFullscreen();
+      } else if (element.msRequestFullscreen) {
+        element.msRequestFullscreen();
+      }
     }
 
+    // Play the video when the page loads and go full screen
+    window.onload = function() {
+      video.play();
+      launchFullScreen(document.documentElement); // Go full screen
+    };
+
     // Redirect to another website after the video ends
-    document.getElementById('myVideo').addEventListener('ended', function() {
+    video.addEventListener('ended', function() {
       window.location.href = 'https://link.datavoid.in/squidgame'; 
     });
 
     // Troubleshooting
-    document.getElementById('myVideo').addEventListener('error', function() {
+    video.addEventListener('error', function() {
       console.error('Error loading the video:', this.error);
     });
   </script>
